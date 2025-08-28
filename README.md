@@ -47,22 +47,12 @@ You will need [Node.js](https://nodejs.org/) (version 16 or later) and `npm` or 
 3.  **Install dependencies:**
 
     ```sh
-    npm install
-    ```
-
-    or if you use yarn:
-
-    ```sh
-    yarn install
+    pnpm install
     ```
 
 4.  **Run the development server:**
     ```sh
-    npm run dev
-    ```
-    or
-    ```sh
-    yarn dev
+    pnpm run dev
     ```
 
 The application should now be running on `http://localhost:5173` (or another port if 5173 is in use).

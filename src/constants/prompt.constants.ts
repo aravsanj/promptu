@@ -20,7 +20,7 @@ export const LINTING_RULES = {
     }
     return issues;
   },
-  Context: (text: string, doc: NlpDocument) => {
+  Context: (_text: string, doc: NlpDocument) => {
     const issues: string[] = [];
     if (doc.verbs().isImperative().found) {
       issues.push(
@@ -53,7 +53,7 @@ export const LINTING_RULES = {
     }
     return issues;
   },
-  Constraints: (text: string, doc: NlpDocument) => {
+  Constraints: (_text: string, doc: NlpDocument) => {
     const issues: string[] = [];
     if (doc.match("#Negative").found) {
       issues.push(
@@ -62,14 +62,14 @@ export const LINTING_RULES = {
     }
     return issues;
   },
-  Examples: (text: string, doc: NlpDocument) => {
+  Examples: (text: string, _doc: NlpDocument) => {
     const issues: string[] = [];
     if (text && !text.toLowerCase().match(/e\.g\.|i\.e\.|for example/)) {
       issues.push('Good examples often start with "e.g.," or "For example,".');
     }
     return issues;
   },
-  OutputFormat: (text: string, doc: NlpDocument) => {
+  OutputFormat: (text: string, _doc: NlpDocument) => {
     const issues: string[] = [];
     if (
       text &&

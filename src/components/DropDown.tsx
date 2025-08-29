@@ -5,29 +5,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import type { PromptConfig } from "../constants/word.constants";
 
-interface ExampleDropdownProps {
-  items: PromptConfig[];
+interface DropdownProps<T> {
+  items: T[];
   value?: string;
   placeholder?: string;
-  onChange: (item: PromptConfig) => void;
+  getValue: (item: T) => string;
+  getLabel: (item: T) => string;
+  onChange: (item: T) => void;
   className?: string;
 }
 
-export default function ExampleDropdown({
+export default function Dropdown<T>({
   items,
   value = "",
-  placeholder = "Select an example...",
+  placeholder = "",
+  getValue,
+  getLabel,
   onChange,
   className = "",
-}: ExampleDropdownProps) {
+}: DropdownProps<T>) {
   return (
     <div className={`relative w-full ${className}`}>
       <Select
-        value={value || undefined} // important: undefined lets placeholder show
+        value={value || undefined}
         onValueChange={(val: string) => {
-          const found = items.find((it) => it.name === val);
+          const found = items.find((it) => getValue(it) === val);
           if (found) onChange(found);
         }}
       >
@@ -36,13 +39,13 @@ export default function ExampleDropdown({
         </SelectTrigger>
 
         <SelectContent className="mt-2 rounded-lg border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl max-h-60 overflow-y-auto">
-          {items.map((it) => (
+          {items.map((it, idx) => (
             <SelectItem
-              key={it.name}
-              value={it.name} // must match `value`
+              key={idx}
+              value={getValue(it)}
               className="cursor-pointer px-3 py-2 text-sm text-gray-200 hover:bg-blue-600/40"
             >
-              {it.name}
+              {getLabel(it)}
             </SelectItem>
           ))}
         </SelectContent>

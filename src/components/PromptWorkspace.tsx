@@ -5,7 +5,7 @@ import { HEDGING_WORDS, defaultExamples } from "../constants/word.constants";
 import type { PromptConfig } from "../constants/word.constants";
 import Header from "./Header";
 import Footer from "./Footer";
-import ExampleDropdown from "./ExampleDropDown";
+import Dropdown from "./DropDown";
 
 const inputStyles =
   "w-full p-2 bg-black/30 text-gray-200 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition";
@@ -39,6 +39,8 @@ export default function PromptWorkspace() {
   const [codeLanguage, setCodeLanguage] = useState<string>("javascript");
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [editablePrompt, setEditablePrompt] = useState<string>("");
+  const [selectedExample, setSelectedExample] = useState<string>("");
+  const [selectedSavedPrompt, setSelectedSavedPrompt] = useState<string>("");
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("promptData") || "null");
@@ -263,9 +265,17 @@ Output Format: ${prompt.outputFormat}
                 <label className="block font-medium mb-2 text-gray-400">
                   Load Example
                 </label>
-                <ExampleDropdown
+                <Dropdown
                   items={defaultExamples}
-                  onChange={(p) => loadPrompt(p)}
+                  value={selectedExample}
+                  placeholder="Select an example..."
+                  getValue={(ex) => ex.name}
+                  getLabel={(ex) => ex.name}
+                  onChange={(selected) => {
+                    loadPrompt(selected);
+                    setSelectedExample(selected.name);
+                    setSelectedSavedPrompt("");
+                  }}
                 />
               </div>
 
@@ -301,26 +311,23 @@ Output Format: ${prompt.outputFormat}
                 );
               })}
 
-              <div className="mb-6 flex gap-3">
+              <div className="mb-6 flex items-center gap-3">
                 <button onClick={savePrompt} className={buttonStyles}>
                   Save Prompt
                 </button>
-                <select
-                  onChange={(e) => {
-                    const selected = savedPrompts.find(
-                      (sp) => sp.name === e.target.value
-                    );
-                    if (selected) loadPrompt(selected);
+                <Dropdown
+                  items={savedPrompts}
+                  value={selectedSavedPrompt}
+                  placeholder="Load Saved Prompt..."
+                  getValue={(sp) => sp.name}
+                  getLabel={(sp) => sp.name}
+                  onChange={(selected) => {
+                    loadPrompt(selected);
+                    setSelectedSavedPrompt(selected.name);
+                    setSelectedExample("");
                   }}
-                  className={`${inputStyles} flex-1`}
-                >
-                  <option value="">Load Saved Prompt...</option>
-                  {savedPrompts.map((sp) => (
-                    <option key={sp.name} value={sp.name}>
-                      {sp.name}
-                    </option>
-                  ))}
-                </select>
+                  className="flex-1"
+                />
               </div>
             </div>
 
@@ -349,7 +356,7 @@ Output Format: ${prompt.outputFormat}
                 </div>
               </div>
               <pre
-                className={`${inputStyles} whitespace-pre-wrap break-words flex-grow min-h-[200px]`}
+                className={`${inputStyles} whitespace-pre-wrap break-words h-[350px] overflow-y-auto`}
               >
                 {finalPrompt}
               </pre>

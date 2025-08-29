@@ -5,6 +5,7 @@ import { HEDGING_WORDS, defaultExamples } from "../constants/word.constants";
 import type { PromptConfig } from "../constants/word.constants";
 import Header from "./Header";
 import Footer from "./Footer";
+import ExampleDropdown from "./ExampleDropDown";
 
 const inputStyles =
   "w-full p-2 bg-black/30 text-gray-200 border border-white/10 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition";
@@ -262,22 +263,10 @@ Output Format: ${prompt.outputFormat}
                 <label className="block font-medium mb-2 text-gray-400">
                   Load Example
                 </label>
-                <select
-                  onChange={(e) => {
-                    const selected = defaultExamples.find(
-                      (ex) => ex.name === e.target.value
-                    );
-                    if (selected) loadPrompt(selected);
-                  }}
-                  className={inputStyles}
-                >
-                  <option value="">Select an example...</option>
-                  {defaultExamples.map((ex) => (
-                    <option key={ex.name} value={ex.name}>
-                      {ex.name}
-                    </option>
-                  ))}
-                </select>
+                <ExampleDropdown
+                  items={defaultExamples}
+                  onChange={(p) => loadPrompt(p)}
+                />
               </div>
 
               {Object.entries(prompt).map(([key, value]) => {

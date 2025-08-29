@@ -57,6 +57,12 @@ const parseFullContext = (fullText: string) => {
   return { textContent: remainingText, codeBlocks };
 };
 
+const stripCodeBlocks = (text: string) => {
+  if (!text) return "";
+  const codeBlockRegex = /\n*```(\w*)\n([\s\S]*?)\n```/g;
+  return text.replace(codeBlockRegex, "");
+};
+
 export default function PromptWorkspace() {
   const [prompt, setPrompt] = useState<PromptState>(initialPromptState);
   const [codeBlocks, setCodeBlocks] = useState<CodeBlock[]>([]);
@@ -99,9 +105,10 @@ export default function PromptWorkspace() {
 
   useEffect(() => {
     const allFeedback: Record<string, string[]> = {};
+    const fullContext = getFullContext();
     const fields = {
       Role: prompt.role,
-      Context: getFullContext(),
+      Context: fullContext,
       Objective: prompt.objective,
       Constraints: prompt.constraints,
       Examples: prompt.examples,
@@ -109,13 +116,22 @@ export default function PromptWorkspace() {
     };
 
     for (const [name, text] of Object.entries(fields)) {
-      const doc = nlp(text);
+      const textWithoutCode = stripCodeBlocks(text);
+
+      const doc = nlp(textWithoutCode);
+
       let issues: string[] = [];
       const rule = LINTING_RULES[name as keyof typeof LINTING_RULES];
-      if (rule) issues = issues.concat(rule(text, doc));
+
+      if (rule) {
+        issues = issues.concat(rule(text, doc));
+      }
+
+      const hedgingDoc = nlp(textWithoutCode);
       HEDGING_WORDS.forEach((phrase: string) => {
-        if (doc.has(phrase))
+        if (hedgingDoc.has(phrase)) {
           issues.push(`Avoid vague language like "${phrase}".`);
+        }
       });
       allFeedback[name] = Array.from(new Set(issues));
     }

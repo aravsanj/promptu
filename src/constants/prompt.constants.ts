@@ -10,7 +10,11 @@ type NlpDocument = ReturnType<typeof nlp>;
 export const LINTING_RULES = {
   Role: (text: string, doc: NlpDocument) => {
     const issues: string[] = [];
-    if (text && !text.toLowerCase().startsWith("you are")) {
+    if (
+      text &&
+      !text.toLowerCase().startsWith("you are") &&
+      !text.toLowerCase().startsWith("you're")
+    ) {
       issues.push(
         'Good roles often start with "You are..." to set a clear persona.'
       );
